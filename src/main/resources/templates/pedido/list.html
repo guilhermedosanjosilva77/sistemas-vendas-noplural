@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listagem de Pedidos</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Pedidos</h1>
+    <a class="btn btn-primary mb-3" th:href="@{/pedidos/novo}">Novo Pedido</a>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Data/Hora</th>
+            <th>Valor Total</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="pedido : ${pedidos}">
+            <td th:text="${pedido.id}"></td>
+            <td th:text="${pedido.cliente.nome}"></td>
+            <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></td>
+            <td>
+                <span th:if="${pedido.status.name() == 'ATIVO'}" class="badge bg-success">ATIVO</span>
+                <span th:if="${pedido.status.name() == 'CANCELADO'}" class="badge bg-danger">CANCELADO</span>
+            </td>
+            <td>
+                <a class="btn btn-sm btn-info" th:href="@{/pedidos/detalhes/{id}(id=${pedido.id})}">Detalhes</a>
+                <a th:if="${pedido.status.name() == 'ATIVO'}" 
+                   class="btn btn-sm btn-warning" 
+                   th:href="@{/pedidos/edit/{id}(id=${pedido.id})}">Editar</a>
+                <a th:if="${pedido.status.name() == 'ATIVO'}" 
+                   class="btn btn-sm btn-danger" 
+                   th:href="@{/pedidos/cancelar/{id}(id=${pedido.id})}">Cancelar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

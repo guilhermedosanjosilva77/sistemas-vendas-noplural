@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Pedido</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Editar Pedido #<span th:text="${pedido.id}"></span></h2>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Informações do Pedido</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Cliente:</strong> <span th:text="${pedido.cliente.nome}"></span></p>
+            <p><strong>Data:</strong> <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
+            <p><strong>Valor Total:</strong> <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></span></p>
+            <p><strong>Status:</strong> 
+                <span th:if="${pedido.status.name() == 'ATIVO'}" class="badge bg-success">ATIVO</span>
+                <span th:if="${pedido.status.name() == 'CANCELADO'}" class="badge bg-danger">CANCELADO</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Adicionar Produto</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/pedidos/{pedidoId}/adicionar-item(pedidoId=${pedido.id})}" method="post">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label for="produtoId" class="form-label">Produto</label>
+                        <select class="form-select" id="produtoId" name="produtoId" required>
+                            <option value="">-- Selecione um produto --</option>
+                            <option th:each="produto : ${produtos}" 
+                                    th:value="${produto.id}" 
+                                    th:text="${produto.nome + ' - Estoque: ' + produto.quantidadeEmEstoque + ' - R$ ' + #numbers.formatDecimal(produto.preco, 1, 2)}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="quantidade" class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" id="quantidade" name="quantidade" min="1" required>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success">Adicionar Produto</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Produtos do Pedido</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered" th:if="${not pedido.itens.empty}">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Subtotal</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${pedido.itens}">
+                        <td th:text="${item.produto.nome}"></td>
+                        <td th:text="${item.quantidade}"></td>
+                        <td th:text="${#numbers.formatCurrency(item.precoUnitario)}"></td>
+                        <td th:text="${#numbers.formatCurrency(item.precoUnitario * item.quantidade)}"></td>
+                        <td>
+                            <form th:action="@{/pedidos/{pedidoId}/remover-item/{itemId}(pedidoId=${pedido.id}, itemId=${item.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-danger">Remover</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div th:if="${pedido.itens.empty}" class="alert alert-info">
+                Nenhum produto adicionado ao pedido.
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a th:href="@{/pedidos}" class="btn btn-secondary">Voltar</a>
+        <form th:action="@{/pedidos/{id}/finalizar(id=${pedido.id})}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-primary">Finalizar Pedido</button>
+        </form>
+    </div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancelar Pedido</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Cancelar Pedido</h1>
+
+    <div class="alert alert-warning">
+        <p>Tem certeza que deseja cancelar o pedido <strong>#<span th:text="${pedido.id}"></span></strong>?</p>
+        <p>Esta ação devolverá todos os produtos ao estoque e não poderá ser desfeita.</p>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <p><strong>Cliente:</strong> <span th:text="${pedido.cliente.nome}"></span></p>
+            <p><strong>Data:</strong> <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></span></p>
+            <p><strong>Valor Total:</strong> <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}"></span></p>
+            <p><strong>Quantidade de Itens:</strong> <span th:text="${pedido.itens.size()}"></span></p>
+        </div>
+    </div>
+
+    <form th:action="@{/pedidos/cancelar/{id}(id=${pedido.id})}" method="post">
+        <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+        <a th:href="@{/pedidos}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
